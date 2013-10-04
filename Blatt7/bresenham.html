@@ -1,0 +1,126 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Bresenham-Algorithmus</title>
+
+		<script>
+
+		var canvas;
+		var context;
+		var CANVAS_HEIGHT = 500;
+		var CANVAS_WIDTH  = 500;
+		var pixelSize = 10;
+
+		var xStart;
+		var yStart;
+		var xEnd;
+		var yEnd;
+
+		function init(){
+			canvas = document.getElementById('canvas');
+			context = canvas.getContext('2d');
+			context.fillStyle = "#ffffff";
+			context.strokeStyle = "#000000";
+			context.fillRect(0,0,CANVAS_HEIGHT,CANVAS_WIDTH);
+			canvas.addEventListener('mousedown', onMouseDown);
+			canvas.addEventListener('mouseup', onMouseUp);
+			drawGrid();
+		}
+
+		function drawGrid() {
+			for (var i = 5; i < CANVAS_HEIGHT; i+=pixelSize) {
+				drawLine(i,0,i,CANVAS_WIDTH);
+				drawLine(0,i,CANVAS_HEIGHT,i);
+			}
+		}
+
+		function drawLine(x,y,x2,y2) {
+			context.lineWidth=0.5;
+			context.beginPath();
+			context.moveTo(x, y);
+			context.lineTo(x2, y2);
+			context.closePath();
+			context.stroke();
+		}
+
+		function onMouseDown(evt) {
+
+			var x = evt.pageX;
+			var y = evt.pageY;
+
+			var xOffset = canvas.offsetLeft;
+			var yOffset = canvas.offsetTop;
+
+			xStart = x - xOffset;
+			yStart = y - yOffset;
+
+		}
+
+		function onMouseUp(evt) {
+
+			var x2 = evt.pageX;
+			var y2 = evt.pageY;
+
+			var xOffset = canvas.offsetLeft;
+			var yOffset = canvas.offsetTop;
+
+			xEnd = x2 - xOffset;
+			yEnd = y2 - yOffset;
+
+			//drawLine(xStart,yStart,xEnd,yEnd);
+			bresenham(xStart,yStart,xEnd,yEnd);
+		}
+
+		function bresenham(x,y,x2,y2) {
+
+			x  = x  - (x  % pixelSize);
+			x2 = x2 - (x2 % pixelSize);
+			y  = y  - (y  % pixelSize);
+			y2 = y2 - (y2 % pixelSize);
+
+
+			var dx = Math.abs(x2 - x);
+			var dy = Math.abs(y2 - y);
+
+			var sx = (x2 > x) ? pixelSize : -(pixelSize);
+			var sy = (y2 > y) ? pixelSize : -(pixelSize);
+
+			var d = 2 * dy - dx;
+			var DO = 2 * dy;
+			var dNO = 2 * (dy - dx);
+
+			context.fillStyle = "#ff00ff";
+			context.fillRect(x,y,pixelSize,pixelSize);
+
+			while (x < x2) {
+				x = x + sx;
+				if (d <= 0) {
+					d = d + DO;
+				}
+				else {
+					y = y + sy;
+					d = d + dNO;
+				}
+				context.fillRect(x,y,pixelSize,pixelSize);
+			}
+		}
+
+
+
+
+		</script>
+	</head>
+	
+	<body onload="init()">
+
+	<div>
+		<h1>Bresenham</h1>
+		<h2>Draw from left to right in the grid below.</h2>
+		<canvas id="canvas" width="500" height="500">
+		</canvas>
+	</div>
+
+
+
+	</body>
+</html>
